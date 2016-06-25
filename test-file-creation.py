@@ -13,7 +13,7 @@ parser.add_argument('--max-depth', help='Max depth to recursively traverse folde
 
 import logging
 from pprint import pprint
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 import os
 import uuid
@@ -26,7 +26,7 @@ def touch(fname, times=None):
         os.utime(fname, times)
 
 # @see http://stackoverflow.com/questions/1854572/traversing-ftp-listing
-def traverse(ftp, max_depth, depth=0):
+def traverse(ftp, max_depth, uid, stack, depth=0):
     if depth > max_depth:
         logging.debug('depth > ' + str(max_depth))
         return
@@ -35,8 +35,19 @@ def traverse(ftp, max_depth, depth=0):
     for entry in (path for path in walker if path not in ('.', '..')):
         try:
             ftp.cwd(entry)
-            traverse(ftp, max_depth, depth + 1)
+            stack.append(entry)
+            traverse(ftp, max_depth, uid, stack, depth + 1)
             
+            # We have reached a leave of no more entries to traverse... let's try to create a directory
+            try:
+                current_directory = '/' + '/'.join(stack)
+                ftp.mkd(uid)
+                logging.info("Created temporary file %s under %s" % (uid, current_directory))
+                ftp.rmd(uid)
+            except:
+                #logging.error("Unexpected error:", sys.exc_info()[0])
+                pass
+            stack.pop()
             ftp.cwd('..')
         except ftplib.error_perm:
             pass
@@ -58,8 +69,8 @@ def main():
     ftp.set_pasv(True)
 
     local_path = os.path.dirname(os.path.realpath(__file__))
-    uid = uuid.uuid4()
-    temp_file = local_path + '/' + str(uid)
+    uid = str(uuid.uuid4())
+    temp_file = local_path + '/' + uid
     logging.debug("Touching temp file %s" % temp_file)
 
     try:
@@ -69,7 +80,7 @@ def main():
         sys.exit(1)
 
     try:
-        traverse(ftp, max_depth)
+        traverse(ftp, max_depth, uid, [])
     except:
         logging.error("Unexpected error:", sys.exc_info()[0])
         sys.exit(1)
