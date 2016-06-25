@@ -8,6 +8,7 @@ import ftplib
 parser = argparse.ArgumentParser(description='Test File Creation in FTP servers')
 parser.add_argument('--server', help='Server name or IP address')
 parser.add_argument('--port', help='Server port', type=int, default=21)
+parser.add_argument('--timeout', help='Timeout in seconds', type=int, default=90)
 parser.add_argument('--max-depth', help='Max depth to recursively traverse folders', type=int, default=3)
 
 import logging
@@ -43,15 +44,16 @@ def traverse(ftp, max_depth, depth=0):
             pass
 
 def main():
-    args   = parser.parse_args()
-    server = args.server
-    port   = args.port
-    max_depth = args.max_depth
+    args       = parser.parse_args()
+    server     = args.server
+    port       = args.port
+    timeout    = args.timeout
+    max_depth  = args.max_depth
 
     logging.info('Connecting to %s:%d' % (server, port))
 
     ftp = ftplib.FTP()
-    ftp.connect(host=server, port=port, timeout=90)
+    ftp.connect(host=server, port=port, timeout=timeout)
     ftp.login()
     ftp.set_pasv(True)
 
