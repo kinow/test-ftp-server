@@ -6,3 +6,4 @@ This repository contains scripts to run tests against an FTP server. The tests i
 
 - **[print-all-readable-files.py](https://github.com/kinow/test-ftp-server/blob/master/print-all-readable-files.py)**: Print a list of all files that the user can list (not necessarily download)
 
+- **[xfer_parser.py](https://github.com/kinow/test-ftp-server/blob/master/xfer_parser.py)**: Parser for XFER log files
