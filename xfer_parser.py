@@ -208,6 +208,7 @@ class XferParser(object):
           pid       a ftpd process ID, not unique in a day
           datetime  a datetime Python object
           message   the log message
+          csv_file  a csv file handler
         """
 
         # Here we will check each state, and if one matches, we return.
