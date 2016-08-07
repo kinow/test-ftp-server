@@ -6,7 +6,7 @@ import argparse
 import ftplib
 
 parser = argparse.ArgumentParser(description='Test File Creation in FTP servers')
-parser.add_argument('--server', help='Server name or IP address')
+parser.add_argument('--server', help='Server name or IP address', required=True)
 parser.add_argument('--port', help='Server port', type=int, default=21)
 parser.add_argument('--timeout', help='Timeout in seconds', type=int, default=90)
 parser.add_argument('--max-depth', help='Max depth to recursively traverse folders', type=int, default=3)
